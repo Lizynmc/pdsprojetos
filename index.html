@@ -1,1 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Investimentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #2C3E50;
+            border-bottom: 2px solid #3498DB;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: #3498DB;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980B9;
+        }
+
+        #results h2 {
+            color: #2C3E50;
+            border-bottom: 1px solid #3498DB;
+            padding-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        #results p {
+            color: #7F8C8D;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Análise de Investimentos</h1>
+        <label for="ticker">Digite o símbolo da ação:</label>
+        <input type="text" id="ticker" placeholder="Ex: AAPL, GOOGL">
+        <button onclick="fetchData()">Buscar</button>
+        <div id="results"></div>
+    </div>
+    <script>
+        const API_KEY = '5WJHX4MSDXRYKGOV';
+        const BASE_URL = 'https://www.alphavantage.co/query';
+
+        function fetchData() {
+            const ticker = document.getElementById('ticker').value;
+            const url = `${BASE_URL}?function=TIME_SERIES_DAILY&symbol=${ticker}&apikey=${API_KEY}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if(data['Time Series (Daily)']) {
+                        const series = data['Time Series (Daily)'];
+                        const lastDate = Object.keys(series)[0];
+                        const lastData = series[lastDate];
+                        
+                        const resultDiv = document.getElementById('results');
+                        resultDiv.innerHTML = `
+                            <h2>Resultados para ${ticker}</h2>
+                            <p>Data: ${lastDate}</p>
+                            <p>Preço de abertura: ${lastData['1. open']}</p>
+                            <p>Preço máximo: ${lastData['2. high']}</p>
+                            <p>Preço mínimo: ${lastData['3. low']}</p>
+                            <p>Preço de fechamento: ${lastData['4. close']}</p>
+                        `;
+                    } else {
+                        alert("Não foi possível obter os dados. Por favor, tente novamente mais tarde ou verifique o símbolo inserido.");
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Erro ao buscar dados. Tente novamente.");
+                });
+        }
+    </script>
+</body>
+</html>
 
